@@ -101,6 +101,7 @@ And the graph:
 
 ![Graph for the top 10 most common makes](images/top_10_makes_graph.png)
 
+
 ### Personal Injury & Airplane Make
 
 With our newly subsetted DataFrame, we can try to judge the relative safety of the different makes of plane. We'll start off again by looking at the average number of injuries for each incident, once again broken down into fatal, serious, and minor. (In this case, we are preemptively excluding the non-injury category.) 
@@ -126,6 +127,7 @@ After subsetting our data by purpose, we can re-run our subsetting by make to ge
 ![Most common makes for subsetted dataframe](images/ai_top_makes.png)
 
 ![Graph of the most common makes for subsetted dataframe](images/ai_top_makes_graph.png)
+
 
 As we might expect, Boeing has dramatically decreased, while Cessna and Piper remain the top two results. More significantly, we can see **AirTractor has moved much higher up on the list**. This again makes a lot of sense -- AirTractor makes planes specifically for agriculture and aerial application. Let's now check out some of the same safety metrics we used above, but with our new set of makes.
 
