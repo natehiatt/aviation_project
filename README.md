@@ -12,9 +12,42 @@ Before diving too far into the data, it is important to emphasize what we do *no
 
 ## Data Preparation
 
-We did our data cleaning in `notebooks/data_cleaning.ipynb`, after which we exported a cleaned version of the data to `data/AviationData_cleaned.csv`. Here, we'll recap exactly what we did to clean the data.
+We did our data cleaning in `notebooks/data_cleaning.ipynb`, after which we exported a cleaned version of the data to `data/AviationData_cleaned.csv`. Here, we'll recap what we did to clean the data.
+
+* Initial cleaning
+    * Changed `Event.Date` to a datetime data type; created a `Year` category based on the datetime.
+    * Made all strings in the DataFrame lower case, so that we could get more accurate counts. At the end of the cleaning, we put strings in title case for aesthetic purposes. We also made the columns here title case, again just for aesthetic reasons.
+
+* Geographic filtering
+    * We chose to only include US events and to remove the `Country` column. This was done on the assumption that we are advising a US-based company, and that the US-based data would be more accurate and complete.
+    * We used the `State.Code` column to create a `State.Names` category, which we then used to create a `Region` category.
+
+* Aircraft Type
+    * Filtered out all amateur-made aircraft, since we're looking at the safest options for a business trying to get into aviation.
+    * Filtered out non-airplanes (e.g. helicopters, gliders, etc.). It's at this point that you can notice some anomalies in the `Year` data. See this section in `notebooks/data_cleaning.ipynb` for more information.
+
+* FAR Codes (see [here](https://pilotinstitute.com/part-91-vs-121-vs-135/) for more info)
+    * Cleaned up data so that we could more clearly see the groups according to FAR Codes.
+    * These data were mostly helpful in cross-referencing with `Purpose.of.Flight` to make sure we were binning everything appropriately.
+
+* Purpose of Flight
+    * Binned these categories to more clearly see trends. We start with 24 unique purposes listed, and finish with 13. The final groupings are as follows (with aerial application referring to agricultural flights, which is confirmed by cross-referencing with the FAR Codes):
+
+         ![Value counts for purpose of flight bins](images/purpose_bins.png)
+
+* Aircraft Make
+    * There's a lot of noise here, so we first grouped the most popular makes -- since the data entry was inconsistent -- and then filtered the DataFrame by both the 25 most common and 10 most common makes (see the Data Analysis section for more on this).
+    * The top 25 DataFrame includes makes with 61 or more incidents reported; the top 10 DataFrame includes makes with 226 or more incdents reported.
+
+* Airports
+    * Grouped together the various ways "private" airports were named.
+
+* Weather
+    * VMC refers to "Visual Meteorological Conditions" which means generally good flight conditions.
+    * IMC refers to "Instrumental Meteorological Conditions" which means reduced visibility and less favorable conditions.
 
 ## Data Analysis & Visualization
+
 
 #### Purpose of Flight
 
@@ -115,3 +148,4 @@ We'll first take a look at the effect of weather for our larger dataframe, and t
 ![Type of Aircraft Damage by Weather Condition for Agriculture/Instructional](images/ai_craft_dmg_weather.png)
 
 Weather has the effect that we expect -- bad weather conditions make it more likely that an incident will involve a destroyed plane. This is true regardless of our subset. From this, we can offer a third suggestion: be picky about the conditions under which planes can be flown. Not only will the presence of an **instructor or extra-competent pilot** improve safety outcomes, mandating that planes can only be flown under **good weather conditions** will also prove helpful.
+
