@@ -1,57 +1,63 @@
-# Aviation Safety
+# Aviation Business Risk Analysis
 
 ## Business Understanding
+We were tasked with advising a company looking to diversify its portfolio by entering the aviation industry. This is a preliminary risk analysis in which we analyzed sub-industries and aircraft makes in order to provide maximum risk mitigation. Our recommendations focus on key stakeholder questions such as: 
+* What are the most common uses of aircrafts and the associated risk factors?
+* Which aviation sub-industries maximize potential profitability and ease of entry? 
+* Of the identified industries, which aircrafts have the strongest safety record?
+* What data are we missing, and what are recommended next steps?
 
 ## Data Understanding
 
-Our data come from the Kaggle [Aviation Accident Database & Synopses](https://www.kaggle.com/datasets/khsamaha/aviation-accident-database-synopses/), which is itself pulled from the National Transportation Safety Board (NTSB). The data, with a handful of exceptions, begin in 1982 and go up to 2022. We start with 88,889 entries, with 31 different columns of data:
+Our data come from the Kaggle [Aviation Accident Database & Synopses](https://www.kaggle.com/datasets/khsamaha/aviation-accident-database-synopses/), which is pulled from the National Transportation Safety Board (NTSB). The data, with a handful of exceptions, begin in 1982 and go up to 2022. We start with 88,889 entries, with 31 different columns of data:
 
 ![.info() of initial data](images/initial_data_info.png)
 
-Before diving too far into the data, it is important to emphasize what we do *not* have. **The most important limitation is that we don't have information on flights for which there is no incident report** -- which is filed when something goes wrong with the plane. We don't have the denominator of total flights during this period. Instead, we only have flights for which an incident report was filed.  
+Before diving too far into the data, it is important to emphasize what we do *not* have. The most important limitation is that we are **lacking information on flights with no incident report**, which is filed only when something goes wrong with the plane. We do not have a denominator of total flights during this time period- only flights for which an incident report was filed.  
 
 ## Data Preparation
 
-We did our data cleaning in `notebooks/data_cleaning.ipynb`, after which we exported a cleaned version of the data to `data/AviationData_cleaned.csv`. Here, we'll recap what we did to clean the data.
+Data cleaning was done in `notebooks/data_cleaning.ipynb` and exported to `data/AviationData_cleaned.csv`. Here, we'll recap our data cleaning methodology.
 
-* Initial cleaning
-    * Changed `Event.Date` to a datetime data type; created a `Year` category based on the datetime.
-    * Made all strings in the DataFrame lower case, so that we could get more accurate counts. At the end of the cleaning, we put strings in title case for aesthetic purposes. We also made the columns here title case, again just for aesthetic reasons.
+* Initial Cleaning
+    * Changed `Event.Date` to a datetime data type; created a `Year` column based on the datetime
+    * Converted all strings to lowercase for accuracy in counts
+    * Left columns as they were and converted strings to titlecase before export (for aesthetic purposes)
 
-* Geographic filtering
-    * We chose to only include US events and to remove the `Country` column. This was done on the assumption that we are advising a US-based company, and that the US-based data would be more accurate and complete.
-    * We used the `State.Code` column to create a `State.Names` category, which we then used to create a `Region` category.
+* Geographic Filtering
+    * Included only US events and removed the `Country` column - assuming the company is US-based company, we wanted to focus on data from domestic incidents
+    * Used the `State.Code` column to create a `State.Names` column, which we then used to create a `Region` column
 
 * Aircraft Type
-    * Filtered out all amateur-made aircraft, since we're looking at the safest options for a business trying to get into aviation.
-    * Filtered out non-airplanes (e.g. helicopters, gliders, etc.). It's at this point that you can notice some anomalies in the `Year` data. See this section in `notebooks/data_cleaning.ipynb` for more information.
+    * Excluded amateur-built aircrafts as we are only looking at professional-built for an aviation business
+    * Excluded non-airplanes (e.g. helicopters, gliders, etc.) - at this point we noticed some anomalies in the `Year` data; reference this section in `notebooks/data_cleaning.ipynb` for more information
 
 * FAR Codes (see [here](https://pilotinstitute.com/part-91-vs-121-vs-135/) for more info)
-    * Cleaned up data so that we could more clearly see the groups according to FAR Codes.
-    * These data were mostly helpful in cross-referencing with `Purpose.of.Flight` to make sure we were binning everything appropriately.
+    * Cleaned the data to more clearly see the groups according to FAR Codes
+    * Cross-referenced with `Purpose.of.Flight` to confirm appropriate binnings
 
 * Purpose of Flight
-    * Binned these categories to more clearly see trends. We start with 24 unique purposes listed, and finish with 13. The final groupings are as follows (with aerial application referring to agricultural flights, which is confirmed by cross-referencing with the FAR Codes):
+    * Binned these categories to identify broad trends. We started with 24 unique purposes listed and finished with 13 - the final groupings are as follows (with aerial application referring to agricultural flights, which is confirmed by cross-referencing with the FAR Codes):
 
          ![Value counts for purpose of flight bins](images/purpose_bins.png)
 
 * Aircraft Make
-    * There's a lot of noise here, so we first grouped the most popular makes -- since the data entry was inconsistent -- and then filtered the DataFrame by both the 25 most common and 10 most common makes (see the Data Analysis section for more on this).
-    * The top 25 DataFrame includes makes with 61 or more incidents reported; the top 10 DataFrame includes makes with 226 or more incdents reported.
+    * First grouped the most popular makes -- since the data entry was inconsistent -- and then filtered the DataFrame by both the 25 most common and 10 most common makes (see the Data Analysis section for more on this)
+    * The top 25 DataFrame includes makes with 61 or more incidents reported; the top 10 DataFrame includes makes with 226 or more incdents reported
 
 * Airports
-    * Grouped together the various ways "private" airports were named.
+    * Grouped together the various ways "private" airports were named
 
 * Weather
-    * VMC refers to "Visual Meteorological Conditions" which means generally good flight conditions.
-    * IMC refers to "Instrumental Meteorological Conditions" which means reduced visibility and less favorable conditions.
+    * VMC refers to "Visual Meteorological Conditions" which means clear visibility and generally good flight conditions
+    * IMC refers to "Instrumental Meteorological Conditions" which means reduced visibility and less favorable conditions
 
 ## Data Analysis & Visualization
 
 
 #### Purpose of Flight
 
-The first way we'll slice up our data is using the `Purpose.Binned` category that we created in our `data_cleaning.ipynb`, since we (1) want to figure out if there are safer and less safe purposes to which planes are used and then (2) if there are certain types of airplane that are safer for that specific type of activity. 
+The first way we'll slice up our data is using the `Purpose.Binned` category that we created in our `data_cleaning.ipynb`, since we (1) want to figure out if there are safer and less safe purposes for which planes are used and then (2) if there are certain types of airplane that are safer for that specific type of activity. 
 
 ![Percentage of Incidents by Purpose of Flight](images/pct_incidents_by_purpose.png)
 
@@ -108,7 +114,7 @@ With our newly subsetted DataFrame, we can try to judge the relative safety of t
 
 ![Average # of Types of Injury by Make](images/avg_types_inj_make.png)
 
-The main takeaway here seems to be that incidents involving a Boeingv are much more likely to result in serious injury. That is unsurprising, since there are so many more people on each plane. But, since we're interested in agriculture and instruction, we're not as concerned with these big passenger planes. In a second, we'll repeat this analysis with incidents where the purpose of the flight was agricultural or instructional.
+The main takeaway here seems to be that incidents involving a Boeing are much more likely to result in serious injury. That is unsurprising, since there are so many more people on each plane. But, since we're interested in agriculture and instruction, we're not as concerned with these big passenger planes. In a second, we'll repeat this analysis with incidents where the purpose of the flight was agricultural or instructional.
 
 We'll first take a quick look at the total numbers of types of aircraft damage by make -- again, not expecting much since we don't have the total number of flights. 
 
@@ -151,3 +157,8 @@ We'll first take a look at the effect of weather for our larger dataframe, and t
 
 Weather has the effect that we expect -- bad weather conditions make it more likely that an incident will involve a destroyed plane. This is true regardless of our subset. From this, we can offer a third suggestion: be picky about the conditions under which planes can be flown. Not only will the presence of an **instructor or extra-competent pilot** improve safety outcomes, mandating that planes can only be flown under **good weather conditions** will also prove helpful.
 
+# Conclusion
+
+(1) Recommended Industry - Agriculture and Instruction
+(2) Recommended Aircraft - AirTractor and Cessna
+(3) Risk Mitigation - in all situations, factor in weather conditions and pilot competence
